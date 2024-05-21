@@ -32,7 +32,7 @@ const Dashboard = () => {
   const getOrders = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/api/admin/all-orders`,
+        `${import.meta.env.VITE_SERVER_URL}/api/admin/orderInfo`,
       );
       setOrders(response.data);
     } catch (error) {

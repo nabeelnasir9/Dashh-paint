@@ -24,25 +24,27 @@ const Orders = () => {
   const [page, setPage] = React.useState(0);
   const [selectedStatus, setSelectedStatus] = React.useState("");
   const [expandedOrderId, setExpandedOrderId] = React.useState(null);
-  const fetchUsersWithOrders = async () => {
+
+  const fetchOrders = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/api/admin/all-users`,
+        `${import.meta.env.VITE_SERVER_URL}/api/admin/all-orders`,
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error fetching orders:", error);
       throw error;
     }
   };
+
   const {
-    data: users = [],
+    data: orders = [],
     refetch,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsersWithOrders,
+    queryKey: ["orders"],
+    queryFn: fetchOrders,
   });
 
   const convertToDollars = (amount) => {
@@ -80,6 +82,7 @@ const Orders = () => {
       toast.error("Update Error:", error);
     },
   });
+
   const handleUpdateStatus = (orderId) => {
     try {
       updateDelivery(orderId);
@@ -98,7 +101,7 @@ const Orders = () => {
     <SideMenu>
       {isLoading && <div className="text-4xl font-bold my-5">Loading...</div>}
       {isError && (
-        <div className="text-4xl font-bold my-5">Error fetching prompts</div>
+        <div className="text-4xl font-bold my-5">Error fetching orders</div>
       )}
 
       <div className="order-table-main">
@@ -108,7 +111,7 @@ const Orders = () => {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ fontWeight: "bolder" }}>
-                    User ID
+                    Order ID
                   </TableCell>
                   <TableCell style={{ fontWeight: "bolder" }}>
                     Full Name
@@ -120,20 +123,24 @@ const Orders = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users
+                {orders
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((user) => (
-                    <React.Fragment key={user._id}>
+                  .map((order) => (
+                    <React.Fragment key={order._id}>
                       <TableRow>
-                        <TableCell>{user._id}</TableCell>
-                        <TableCell>{user.fullName}</TableCell>
-                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{order._id}</TableCell>
+                        <TableCell>
+                          {order.shipping.customer_details.name}
+                        </TableCell>
+                        <TableCell>
+                          {order.shipping.customer_details.email}
+                        </TableCell>
                         <TableCell>
                           <Button
                             variant="outlined"
-                            onClick={() => handleExpandClick(user._id)}
+                            onClick={() => handleExpandClick(order._id)}
                           >
-                            {expandedOrderId === user._id
+                            {expandedOrderId === order._id
                               ? "Collapse"
                               : "Expand"}
                           </Button>
@@ -142,7 +149,7 @@ const Orders = () => {
                       <TableRow>
                         <TableCell colSpan={4}>
                           <Collapse
-                            in={expandedOrderId === user._id}
+                            in={expandedOrderId === order._id}
                             timeout="auto"
                             unmountOnExit
                           >
@@ -165,7 +172,7 @@ const Orders = () => {
                                     Quantity
                                   </TableCell>
                                   <TableCell style={{ fontWeight: "bolder" }}>
-                                    Order Status(Stripe)
+                                    Order Status (Stripe)
                                   </TableCell>
                                   <TableCell style={{ fontWeight: "bolder" }}>
                                     Images
@@ -176,155 +183,137 @@ const Orders = () => {
                                 </TableRow>
                               </TableHead>
                               <TableBody>
-                                {user.orders.map((order) => (
-                                  <React.Fragment key={order._id}>
-                                    {order.lineItems.map((item, index) => (
-                                      <TableRow key={index}>
-                                        <TableCell>{order._id}</TableCell>
-                                        <TableCell>
-                                          <FormControl>
-                                            <InputLabel>
-                                              {order.delivery_status}
-                                            </InputLabel>
-                                            <Select
-                                              defaultValue="Expected"
-                                              value={selectedStatus}
-                                              onChange={handleStatusChange}
+                                {order.lineItems.map((item, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell>{order._id}</TableCell>
+                                    <TableCell>
+                                      <FormControl>
+                                        <InputLabel>
+                                          {order.delivery_status}
+                                        </InputLabel>
+                                        <Select
+                                          defaultValue="Expected"
+                                          value={selectedStatus}
+                                          onChange={handleStatusChange}
+                                        >
+                                          <MenuItem selected value="Expected">
+                                            Expected
+                                          </MenuItem>
+                                          <MenuItem value="Shipped">
+                                            Shipped
+                                          </MenuItem>
+                                          <MenuItem value="Inproduction">
+                                            Inproduction
+                                          </MenuItem>
+                                          <MenuItem value="Cancelled">
+                                            Cancelled
+                                          </MenuItem>
+                                          <MenuItem value="Rejected">
+                                            Rejected
+                                          </MenuItem>
+                                          <MenuItem value="Delivered">
+                                            Delivered
+                                          </MenuItem>
+                                        </Select>
+                                        <Button
+                                          variant="contained"
+                                          onClick={() =>
+                                            handleUpdateStatus(order._id)
+                                          }
+                                        >
+                                          Update Status
+                                        </Button>
+                                      </FormControl>
+                                    </TableCell>
+                                    <TableCell>
+                                      {item.price_data.product_data.name}
+                                    </TableCell>
+                                    <TableCell>
+                                      {convertToDollars(
+                                        item.price_data.unit_amount,
+                                      )}
+                                    </TableCell>
+                                    <TableCell>{item.quantity}</TableCell>
+                                    <TableCell>
+                                      {order.shipping.payment_status}
+                                    </TableCell>
+                                    <TableCell>
+                                      {item.price_data.product_data.images.map(
+                                        (image, idx) => (
+                                          <div
+                                            key={idx}
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "column",
+                                            }}
+                                          >
+                                            <a
+                                              href={image}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              download={`Product_${idx}`}
                                             >
-                                              <MenuItem
-                                                selected
-                                                value="Expected"
-                                              >
-                                                Expected
-                                              </MenuItem>
-                                              <MenuItem value="Shipped">
-                                                Shipped
-                                              </MenuItem>
-                                              <MenuItem value="Inproduction">
-                                                Inproduction
-                                              </MenuItem>
-                                              <MenuItem value="Cancelled">
-                                                Cancelled
-                                              </MenuItem>
-                                              <MenuItem value="Rejected">
-                                                Rejected
-                                              </MenuItem>
-                                              <MenuItem value="Delivered">
-                                                Delivered
-                                              </MenuItem>
-                                            </Select>
-                                            <Button
-                                              variant="contained"
-                                              onClick={() =>
-                                                handleUpdateStatus(order._id)
-                                              }
-                                            >
-                                              Update Status
-                                            </Button>
-                                          </FormControl>
-                                        </TableCell>
-                                        <TableCell>
-                                          {item.price_data.product_data.name}
-                                        </TableCell>
-                                        <TableCell>
-                                          {convertToDollars(
-                                            item.price_data.unit_amount,
-                                          )}
-                                        </TableCell>
-                                        <TableCell>{item.quantity}</TableCell>
-                                        <TableCell>
-                                          {order.shipping.payment_status}
-                                        </TableCell>
-
-                                        <TableCell>
-                                          {item.price_data.product_data.images.map(
-                                            (image, idx) => (
-                                              <div
-                                                key={idx}
+                                              <img
+                                                src={image}
+                                                alt={`Product ${idx}`}
                                                 style={{
-                                                  display: "flex",
-                                                  flexDirection: "column",
+                                                  width: "200px",
+                                                  height: "350px",
+                                                  marginRight: "5px",
+                                                  cursor: "pointer",
                                                 }}
-                                              >
-                                                <a
-                                                  href={image}
-                                                  target="_blank"
-                                                  rel="noopener noreferrer"
-                                                  download={`Product_${idx}`}
-                                                >
-                                                  <img
-                                                    src={image}
-                                                    alt={`Product ${idx}`}
-                                                    style={{
-                                                      width: "200px",
-                                                      height: "350px",
-                                                      marginRight: "5px",
-                                                      cursor: "pointer",
-                                                    }}
-                                                  />
-                                                </a>
-                                              </div>
-                                            ),
-                                          )}
-                                        </TableCell>
-
-                                        <TableCell>
-                                          {order.shipping &&
-                                            order.shipping.customer_details && (
-                                              <div>
-                                                Name:{" "}
-                                                {
-                                                  order.shipping
-                                                    .customer_details.name
-                                                }
-                                                <br />
-                                                Email:{" "}
-                                                {
-                                                  order.shipping
-                                                    .customer_details.email
-                                                }
-                                                <br />
-                                                Address:{" "}
-                                                {
-                                                  order.shipping
-                                                    .customer_details.address
-                                                    .line1
-                                                }
-                                                <br />
-                                                City:{" "}
-                                                {
-                                                  order.shipping
-                                                    .customer_details.address
-                                                    .city
-                                                }
-                                                <br />
-                                                State:{" "}
-                                                {
-                                                  order.shipping
-                                                    .customer_details.address
-                                                    .state
-                                                }
-                                                <br />
-                                                Postal Code:{" "}
-                                                {
-                                                  order.shipping
-                                                    .customer_details.address
-                                                    .postal_code
-                                                }
-                                                <br />
-                                                Country:{" "}
-                                                {
-                                                  order.shipping
-                                                    .customer_details.address
-                                                    .country
-                                                }
-                                                <br />
-                                              </div>
-                                            )}
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </React.Fragment>
+                                              />
+                                            </a>
+                                          </div>
+                                        ),
+                                      )}
+                                    </TableCell>
+                                    <TableCell>
+                                      {order.shipping.customer_details && (
+                                        <div>
+                                          Name:{" "}
+                                          {order.shipping.customer_details.name}
+                                          <br />
+                                          Email:{" "}
+                                          {
+                                            order.shipping.customer_details
+                                              .email
+                                          }
+                                          <br />
+                                          Address:{" "}
+                                          {
+                                            order.shipping.customer_details
+                                              .address.line1
+                                          }
+                                          <br />
+                                          City:{" "}
+                                          {
+                                            order.shipping.customer_details
+                                              .address.city
+                                          }
+                                          <br />
+                                          State:{" "}
+                                          {
+                                            order.shipping.customer_details
+                                              .address.state
+                                          }
+                                          <br />
+                                          Postal Code:{" "}
+                                          {
+                                            order.shipping.customer_details
+                                              .address.postal_code
+                                          }
+                                          <br />
+                                          Country:{" "}
+                                          {
+                                            order.shipping.customer_details
+                                              .address.country
+                                          }
+                                          <br />
+                                        </div>
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
                                 ))}
                               </TableBody>
                             </Table>
@@ -339,7 +328,7 @@ const Orders = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25, 100]}
             component="div"
-            count={users.length}
+            count={orders.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
