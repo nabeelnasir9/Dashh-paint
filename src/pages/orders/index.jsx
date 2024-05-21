@@ -111,7 +111,7 @@ const Orders = () => {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ fontWeight: "bolder" }}>
-                    Order ID
+                    Tracking IDs
                   </TableCell>
                   <TableCell style={{ fontWeight: "bolder" }}>
                     Full Name
@@ -128,7 +128,7 @@ const Orders = () => {
                   .map((order) => (
                     <React.Fragment key={order._id}>
                       <TableRow>
-                        <TableCell>{order._id}</TableCell>
+                        <TableCell>{order.trackingId}</TableCell>
                         <TableCell>
                           {order.shipping.customer_details.name}
                         </TableCell>
