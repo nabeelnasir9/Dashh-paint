@@ -1,6 +1,6 @@
-import React from "react";
 import "./side-menu-data.css";
 import { useTheme } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -13,9 +13,6 @@ const SideMenuData = () => {
   const location = useLocation();
   let CurrentPagePath = location.pathname;
   const theme = useTheme();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
   const isMatch = useMediaQuery(theme.breakpoints.down("lg"));
   return (
     <>
@@ -81,6 +78,22 @@ const SideMenuData = () => {
                   </Button>
                 </li>
                 <br />
+                <li className="side-menu-list-item">
+                  <Button
+                    variant="text"
+                    className={
+                      CurrentPagePath === "/logout"
+                        ? "side-menu-active-page"
+                        : "side-menu-page"
+                    }
+                    onClick={() => {
+                      navigate("/log-in");
+                    }}
+                  >
+                    <LogoutIcon />
+                    <span className="side-menu-page-title">Logout</span>
+                  </Button>
+                </li>
               </ul>
             </div>
             <div className="side-menu-footer-container">

@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
+import LogoutIcon from "@mui/icons-material/Logout";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import axios from "axios";
-import CreateIcon from "@mui/icons-material/Create";
 import SideMenuData from "./side-menu-data";
 import { Grid, IconButton, Badge } from "@mui/material"; // Import Badge component
 import "./index.css";
@@ -65,9 +66,7 @@ export const SideMenu = (props) => {
       const newData = parseInt(getNoti.data);
       const difference = newData - remain;
       if (difference > 0) {
-        // Show badge when new notifications arrive
         setNotificationBadge(true);
-        for (let i = 0; i < difference; i++) {}
       }
       setNewOrders(difference);
       localStorage.setItem("noti", newData.toString());
@@ -189,6 +188,24 @@ export const SideMenu = (props) => {
                                 </Button>
                               </li>
                               <br />
+                              <li className="side-menu-list-item">
+                                <Button
+                                  variant="text"
+                                  className={
+                                    CurrentPagePath === "/logout"
+                                      ? "side-menu-active-page"
+                                      : "side-menu-page"
+                                  }
+                                  onClick={() => {
+                                    navigate("/log-in");
+                                  }}
+                                >
+                                  <LogoutIcon />
+                                  <span className="side-menu-page-title">
+                                    Logout
+                                  </span>
+                                </Button>
+                              </li>
                             </ul>
                           </div>
                           <div className="side-menu-footer-container">
