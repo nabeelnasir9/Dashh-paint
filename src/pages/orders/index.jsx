@@ -237,14 +237,20 @@ const Orders = () => {
                                     <TableCell>
                                       {order.shipping.payment_status}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        gap: "2px",
+                                      }}
+                                    >
                                       {item.price_data.product_data.images.map(
                                         (image, idx) => (
                                           <div
                                             key={idx}
                                             style={{
                                               display: "flex",
-                                              flexDirection: "column",
+                                              flexDirection: "row",
                                             }}
                                           >
                                             <a
