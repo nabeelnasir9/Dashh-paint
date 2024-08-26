@@ -61,7 +61,7 @@ const Orders = () => {
     setSelectedStatus(event.target.value);
   };
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (_event, newPage) => {
     setPage(newPage);
   };
 
@@ -130,10 +130,10 @@ const Orders = () => {
                       <TableRow>
                         <TableCell>{order.trackingId}</TableCell>
                         <TableCell>
-                          {order.shipping.customer_details.name}
+                          {order.shipping?.customer_details?.name}
                         </TableCell>
                         <TableCell>
-                          {order.shipping.customer_details.email}
+                          {order.shipping?.customer_details?.email}
                         </TableCell>
                         <TableCell>
                           <Button
@@ -235,7 +235,7 @@ const Orders = () => {
                                     </TableCell>
                                     <TableCell>{item.quantity}</TableCell>
                                     <TableCell>
-                                      {order.shipping.payment_status}
+                                      {order?.shipping?.payment_status}
                                     </TableCell>
                                     <TableCell
                                       style={{
@@ -275,45 +275,48 @@ const Orders = () => {
                                       )}
                                     </TableCell>
                                     <TableCell>
-                                      {order.shipping.customer_details && (
+                                      {order.shipping?.customer_details && (
                                         <div>
                                           Name:{" "}
-                                          {order.shipping.customer_details.name}
+                                          {
+                                            order.shipping?.customer_details
+                                              ?.name
+                                          }
                                           <br />
                                           Email:{" "}
                                           {
-                                            order.shipping.customer_details
+                                            order.shipping?.customer_details
                                               .email
                                           }
                                           <br />
                                           Address:{" "}
                                           {
-                                            order.shipping.customer_details
+                                            order.shipping?.customer_details
                                               .address.line1
                                           }
                                           <br />
                                           City:{" "}
                                           {
-                                            order.shipping.customer_details
+                                            order.shipping?.customer_details
                                               .address.city
                                           }
                                           <br />
                                           State:{" "}
                                           {
-                                            order.shipping.customer_details
+                                            order.shipping?.customer_details
                                               .address.state
                                           }
                                           <br />
                                           Postal Code:{" "}
                                           {
-                                            order.shipping.customer_details
+                                            order.shipping?.customer_details
                                               .address.postal_code
                                           }
                                           <br />
                                           Country:{" "}
                                           {
-                                            order.shipping.customer_details
-                                              .address.country
+                                            order.shipping?.customer_details
+                                              .address?.country
                                           }
                                           <br />
                                         </div>
