@@ -226,7 +226,7 @@ const Orders = () => {
                                       </FormControl>
                                     </TableCell>
                                     <TableCell>
-                                      {item.price_data.product_data.name}
+                                      {item.price_data?.product_data?.name}
                                     </TableCell>
                                     <TableCell>
                                       {convertToDollars(
@@ -244,7 +244,7 @@ const Orders = () => {
                                         gap: "2px",
                                       }}
                                     >
-                                      {item.price_data.product_data.images.map(
+                                      {item.price_data?.product_data?.images.map(
                                         (image, idx) => (
                                           <div
                                             key={idx}
