@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/logo512.png";
 import GridViewIcon from "@mui/icons-material/GridView";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+// import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 const SideMenuData = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,7 +61,7 @@ const SideMenuData = () => {
                     <span className="side-menu-page-title">Orders</span>
                   </Button>
                 </li>
-                <li className="side-menu-list-item">
+                {/* <li className="side-menu-list-item">
                   <Button
                     variant="text"
                     className={
@@ -76,8 +76,8 @@ const SideMenuData = () => {
                     <AccountCircleOutlinedIcon />
                     <span className="side-menu-page-title">Profile</span>
                   </Button>
-                </li>
-                <br />
+                </li> */}
+                {/* <br /> */}
                 <li className="side-menu-list-item">
                   <Button
                     variant="text"

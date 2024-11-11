@@ -18,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import Logo from "../../assets/logo512.png";
 import GridViewIcon from "@mui/icons-material/GridView";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+// import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import SearchIcon from "./../../assets/svg/search.svg";
 import NotificationIcon from "./../../assets/svg/notification.svg";
 
@@ -169,7 +169,7 @@ export const SideMenu = (props) => {
                                   </span>
                                 </Button>
                               </li>
-                              <li className="side-menu-list-item">
+                              {/* <li className="side-menu-list-item">
                                 <Button
                                   variant="text"
                                   className={
@@ -187,7 +187,7 @@ export const SideMenu = (props) => {
                                   </span>
                                 </Button>
                               </li>
-                              <br />
+                              <br /> */}
                               <li className="side-menu-list-item">
                                 <Button
                                   variant="text"
@@ -266,13 +266,13 @@ export const SideMenu = (props) => {
                           </MenuItem>
                         ))}
                       </Menu>
-                      <Button
+                      {/* <Button
                         variant="text"
                         className="side-menu-profile"
                         onClick={() => navigate("/profile")}
                       >
                         <img src="https://a.storyblok.com/f/191576/1200x800/faa88c639f/round_profil_picture_before_.webp" />
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 </div>
