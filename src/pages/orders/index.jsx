@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { SideMenu } from "../../components";
@@ -18,6 +18,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button";
 import Collapse from "@mui/material/Collapse";
+import { BeatLoader } from "react-spinners";
 
 const Orders = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -46,6 +47,11 @@ const Orders = () => {
     queryKey: ["orders"],
     queryFn: fetchOrders,
   });
+
+  // Memoize the reversed orders
+  const reversedOrders = useMemo(() => {
+    return [...orders].reverse();
+  }, [orders]);
 
   const convertToDollars = (amount) => {
     return `$${(amount / 100).toFixed(2)}`;
@@ -77,19 +83,15 @@ const Orders = () => {
     },
     onSuccess: () => {
       toast.success("Status updated successfully");
+      refetch(); // Moved refetch here to ensure it's called after success
     },
     onError: (error) => {
-      toast.error("Update Error:", error);
+      toast.error(`Update Error: ${error.message}`);
     },
   });
 
   const handleUpdateStatus = (orderId) => {
-    try {
-      updateDelivery(orderId);
-      refetch();
-    } catch (error) {
-      alert("Failed to update delivery status. Please try again.");
-    }
+    updateDelivery(orderId);
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -99,7 +101,7 @@ const Orders = () => {
 
   return (
     <SideMenu>
-      {isLoading && <div className="text-4xl font-bold my-5">Loading...</div>}
+      {isLoading && <div className="text-4xl font-bold my-5 text-center"><BeatLoader color="#328CF2"/></div>}
       {isError && (
         <div className="text-4xl font-bold my-5">Error fetching orders</div>
       )}
@@ -123,7 +125,7 @@ const Orders = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {orders
+                {reversedOrders
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((order) => (
                     <React.Fragment key={order._id}>
@@ -187,39 +189,29 @@ const Orders = () => {
                                   <TableRow key={index}>
                                     <TableCell>{order._id}</TableCell>
                                     <TableCell>
-                                      <FormControl>
-                                        <InputLabel>
+                                      <FormControl fullWidth>
+                                        <InputLabel id={`status-label-${order._id}`}>
                                           {order.delivery_status}
                                         </InputLabel>
                                         <Select
-                                          defaultValue="Expected"
-                                          value={selectedStatus}
+                                          labelId={`status-label-${order._id}`}
+                                          value={selectedStatus || order.delivery_status}
                                           onChange={handleStatusChange}
+                                          label="Delivery Status"
                                         >
-                                          <MenuItem selected value="Expected">
-                                            Expected
-                                          </MenuItem>
-                                          <MenuItem value="Shipped">
-                                            Shipped
-                                          </MenuItem>
-                                          <MenuItem value="Inproduction">
-                                            Inproduction
-                                          </MenuItem>
-                                          <MenuItem value="Cancelled">
-                                            Cancelled
-                                          </MenuItem>
-                                          <MenuItem value="Rejected">
-                                            Rejected
-                                          </MenuItem>
-                                          <MenuItem value="Delivered">
-                                            Delivered
-                                          </MenuItem>
+                                          <MenuItem value="Expected">Expected</MenuItem>
+                                          <MenuItem value="Shipped">Shipped</MenuItem>
+                                          <MenuItem value="Inproduction">Inproduction</MenuItem>
+                                          <MenuItem value="Cancelled">Cancelled</MenuItem>
+                                          <MenuItem value="Rejected">Rejected</MenuItem>
+                                          <MenuItem value="Delivered">Delivered</MenuItem>
                                         </Select>
                                         <Button
                                           variant="contained"
                                           onClick={() =>
                                             handleUpdateStatus(order._id)
                                           }
+                                          style={{ marginTop: "10px" }}
                                         >
                                           Update Status
                                         </Button>
@@ -241,7 +233,7 @@ const Orders = () => {
                                       style={{
                                         display: "flex",
                                         flexDirection: "row",
-                                        gap: "2px",
+                                        gap: "5px",
                                       }}
                                     >
                                       {item.price_data?.product_data?.images.map(
@@ -263,9 +255,8 @@ const Orders = () => {
                                                 src={image}
                                                 alt={`Product ${idx}`}
                                                 style={{
-                                                  width: "200px",
-                                                  height: "350px",
-                                                  marginRight: "5px",
+                                                  width: "100px",
+                                                  height: "auto",
                                                   cursor: "pointer",
                                                 }}
                                               />
@@ -277,43 +268,43 @@ const Orders = () => {
                                     <TableCell>
                                       {order.shipping?.customer_details && (
                                         <div>
-                                          Name:{" "}
+                                          <strong>Name:</strong>{" "}
                                           {
                                             order.shipping?.customer_details
                                               ?.name
                                           }
                                           <br />
-                                          Email:{" "}
+                                          <strong>Email:</strong>{" "}
                                           {
                                             order.shipping?.customer_details
                                               .email
                                           }
                                           <br />
-                                          Address:{" "}
+                                          <strong>Address:</strong>{" "}
                                           {
                                             order.shipping?.customer_details
                                               .address.line1
                                           }
                                           <br />
-                                          City:{" "}
+                                          <strong>City:</strong>{" "}
                                           {
                                             order.shipping?.customer_details
                                               .address.city
                                           }
                                           <br />
-                                          State:{" "}
+                                          <strong>State:</strong>{" "}
                                           {
                                             order.shipping?.customer_details
                                               .address.state
                                           }
                                           <br />
-                                          Postal Code:{" "}
+                                          <strong>Postal Code:</strong>{" "}
                                           {
                                             order.shipping?.customer_details
                                               .address.postal_code
                                           }
                                           <br />
-                                          Country:{" "}
+                                          <strong>Country:</strong>{" "}
                                           {
                                             order.shipping?.customer_details
                                               .address?.country
@@ -337,7 +328,7 @@ const Orders = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25, 100]}
             component="div"
-            count={orders.length}
+            count={reversedOrders.length} // Updated to use reversedOrders
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
